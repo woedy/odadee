@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
       },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Odadee',
+        title: 'Odade3',
         theme: theme(),
         home: MyHomePage(),
       ),
