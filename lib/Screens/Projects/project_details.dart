@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:odadee/Screens/Profile/user_profile_screen.dart';
 import 'package:odadee/Screens/Projects/models/project_detail_model.dart';
 import 'package:odadee/Screens/Projects/pay_dues.dart';
 import 'package:odadee/Screens/Radio/radio_screen.dart';
+import 'package:odadee/Screens/Settings/settings_screen.dart';
 import 'package:odadee/constants.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:http/http.dart' as http;
@@ -169,7 +171,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                     Row(
                                       children: [
                                         Text("Target: ", style: TextStyle( fontSize: 14, color: Colors.grey ),),
-                                        Text(" 3000 GHS", style: TextStyle( fontSize: 14, color: odaPrimary, fontWeight: FontWeight.w900 ),),
+                                        Text(widget.data.fundingTarget + " GHS", style: TextStyle( fontSize: 14, color: odaPrimary, fontWeight: FontWeight.w900 ),),
 
                                       ],
                                     ),
@@ -179,7 +181,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                     Row(
                                       children: [
                                         Text("Amount Raised: ", style: TextStyle( fontSize: 14, color: Colors.grey ),),
-                                        Text(" 45 GHS", style: TextStyle( fontSize: 14, color: odaPrimary, fontWeight: FontWeight.w900 ),),
+                                        Text(widget.data.currentFunding.toString() + " GHS", style: TextStyle( fontSize: 14, color: odaPrimary, fontWeight: FontWeight.w900 ),),
 
                                       ],
                                     ),
@@ -382,6 +384,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       InkWell(
                         onTap: (){
 
+                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SettingsScreen()));
 
                         },
                         child: Column(
@@ -397,6 +400,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       InkWell(
                         onTap: (){
 
+                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserProfileScreen()));
 
                         },
                         child: Column(
