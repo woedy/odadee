@@ -14,10 +14,8 @@ import 'package:odadee/Screens/Authentication/SignUp/sign_up_2.dart';
 import 'package:odadee/Screens/Authentication/SignUp/sign_up_3.dart';
 import 'package:odadee/Screens/Dashboard/dashboard_screen.dart';
 import 'package:odadee/Screens/Events/events_list.dart';
-import 'package:odadee/Screens/Profile/user_profile_screen.dart';
 
 import 'package:odadee/Screens/Radio/playing_screen.dart';
-import 'package:odadee/Screens/Settings/settings_screen.dart';
 import 'package:odadee/Screens/SplashScreen/splash_screen.dart';
 
 import 'package:odadee/constants.dart';
@@ -82,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return FutureBuilder(
         future: _user_api,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          //return SettingsScreen();
+         // return AllNewsScreen();
           return api_key == null ? SplashScreen() : DashboardScreen();
 
 

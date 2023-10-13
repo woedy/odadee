@@ -10,11 +10,13 @@ import 'package:odadee/Screens/Articles/news_details.dart';
 import 'package:odadee/Screens/Events/event_details.dart';
 import 'package:odadee/Screens/Events/events_list.dart';
 import 'package:odadee/Screens/Events/models/events_model.dart';
+import 'package:odadee/Screens/Profile/user_profile_screen.dart';
 import 'package:odadee/Screens/Projects/models/all_projects_model.dart';
 import 'package:odadee/Screens/Projects/pay_dues.dart';
 import 'package:odadee/Screens/Projects/project_details.dart';
 import 'package:odadee/Screens/Projects/projects_screen.dart';
 import 'package:odadee/Screens/Radio/radio_screen.dart';
+import 'package:odadee/Screens/Settings/settings_screen.dart';
 import 'package:odadee/constants.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:http/http.dart' as http;
@@ -148,10 +150,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
 
+
   get_user_year_group() async {
     user_year_group = await getUserYearGroup();
   }
-
 
 
 
@@ -717,6 +719,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             InkWell(
                               onTap: (){
 
+                                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SettingsScreen()));
 
                               },
                               child: Column(
@@ -732,6 +735,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             InkWell(
                               onTap: (){
 
+                                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserProfileScreen()));
 
                               },
                               child: Column(

@@ -24,10 +24,11 @@ AppBarTheme appBarTheme() {
   return AppBarTheme(
     color: odaPrimary,
     elevation: 0,
-    brightness: Brightness.dark,
+   /* brightness: Brightness.dark,
     iconTheme: IconThemeData(color: bodyText1),
       textTheme: TextTheme(
-      headline6: TextStyle(color: bodyText1, fontSize: 12)
-  )
+      headline6: TextStyle(color: bodyText1, fontSize: 12
+      )
+  )*/
   );
 }

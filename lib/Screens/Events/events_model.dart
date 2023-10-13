@@ -1,22 +1,23 @@
-class AllArticlesModel {
-  News? news;
+class AllEventsModel {
+  Events? events;
 
-  AllArticlesModel({this.news});
+  AllEventsModel({this.events});
 
-  AllArticlesModel.fromJson(Map<String, dynamic> json) {
-    news = json['news'] != null ? new News.fromJson(json['news']) : null;
+  AllEventsModel.fromJson(Map<String, dynamic> json) {
+    events =
+    json['events'] != null ? new Events.fromJson(json['events']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.news != null) {
-      data['news'] = this.news!.toJson();
+    if (this.events != null) {
+      data['events'] = this.events!.toJson();
     }
     return data;
   }
 }
 
-class News {
+class Events {
   int? currentPage;
   List<Data>? data;
   String? firstPageUrl;
@@ -27,11 +28,11 @@ class News {
   String? nextPageUrl;
   String? path;
   int? perPage;
-  String? prevPageUrl;
+  Null? prevPageUrl;
   int? to;
   int? total;
 
-  News(
+  Events(
       {this.currentPage,
         this.data,
         this.firstPageUrl,
@@ -46,7 +47,7 @@ class News {
         this.to,
         this.total});
 
-  News.fromJson(Map<String, dynamic> json) {
+  Events.fromJson(Map<String, dynamic> json) {
     currentPage = json['current_page'];
     if (json['data'] != null) {
       data = <Data>[];
@@ -97,49 +98,46 @@ class News {
 
 class Data {
   int? id;
+  int? userId;
+  String? invite;
+  int? yeargroup;
   String? title;
   String? slug;
   String? content;
-  String? summary;
-  String? video;
-  String? image;
-  int? userId;
-  int? yeargroup;
-  String? yearmonth;
-  String? admin;
-  String? sticky;
+  String? startDate;
+  String? endDate;
+  String? allDay;
+  int? categoryId;
   String? homePage;
   String? createdTime;
 
   Data(
       {this.id,
+        this.userId,
+        this.invite,
+        this.yeargroup,
         this.title,
         this.slug,
         this.content,
-        this.summary,
-        this.video,
-        this.image,
-        this.userId,
-        this.yeargroup,
-        this.yearmonth,
-        this.admin,
-        this.sticky,
+        this.startDate,
+        this.endDate,
+        this.allDay,
+        this.categoryId,
         this.homePage,
         this.createdTime});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    userId = json['userId'];
+    invite = json['invite'];
+    yeargroup = json['yeargroup'];
     title = json['title'];
     slug = json['slug'];
     content = json['content'];
-    summary = json['summary'];
-    video = json['video'];
-    image = json['image'];
-    userId = json['userId'];
-    yeargroup = json['yeargroup'];
-    yearmonth = json['yearmonth'];
-    admin = json['admin'];
-    sticky = json['sticky'];
+    startDate = json['startDate'];
+    endDate = json['endDate'];
+    allDay = json['allDay'];
+    categoryId = json['categoryId'];
     homePage = json['homePage'];
     createdTime = json['createdTime'];
   }
@@ -147,17 +145,16 @@ class Data {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
+    data['userId'] = this.userId;
+    data['invite'] = this.invite;
+    data['yeargroup'] = this.yeargroup;
     data['title'] = this.title;
     data['slug'] = this.slug;
     data['content'] = this.content;
-    data['summary'] = this.summary;
-    data['video'] = this.video;
-    data['image'] = this.image;
-    data['userId'] = this.userId;
-    data['yeargroup'] = this.yeargroup;
-    data['yearmonth'] = this.yearmonth;
-    data['admin'] = this.admin;
-    data['sticky'] = this.sticky;
+    data['startDate'] = this.startDate;
+    data['endDate'] = this.endDate;
+    data['allDay'] = this.allDay;
+    data['categoryId'] = this.categoryId;
     data['homePage'] = this.homePage;
     data['createdTime'] = this.createdTime;
     return data;

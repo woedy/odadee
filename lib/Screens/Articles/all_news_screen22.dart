@@ -50,9 +50,11 @@ class AllNewsScreen extends StatefulWidget {
 
 class _AllNewsScreenState extends State<AllNewsScreen> {
 
-  bool show_filter = false;
-  String? graduation_year;
-  final _formKey = GlobalKey<FormState>();
+  int currentPage = 1;
+  List<News> newsItems = [];
+  bool isLoading = false;
+  bool hasMoreData = true;
+
 
   Future<AllArticlesModel>? _futureGetAllNews;
 
@@ -233,7 +235,7 @@ class _AllNewsScreenState extends State<AllNewsScreen> {
                                             SizedBox(
                                               height: 10,
                                             ),
-                                            Text(news[index].summary!.toString(), maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle( fontSize: 15, color:Colors.black54),),
+                                            Text(news[index].content!.toString(), maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle( fontSize: 15, color:Colors.black54),),
                                             SizedBox(
                                               height: 10,
                                             ),

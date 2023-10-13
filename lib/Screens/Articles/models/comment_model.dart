@@ -1,22 +1,24 @@
-class AllArticlesModel {
-  News? news;
+class CommentModel {
+  Comments? comments;
 
-  AllArticlesModel({this.news});
+  CommentModel({this.comments});
 
-  AllArticlesModel.fromJson(Map<String, dynamic> json) {
-    news = json['news'] != null ? new News.fromJson(json['news']) : null;
+  CommentModel.fromJson(Map<String, dynamic> json) {
+    comments = json['comments'] != null
+        ? new Comments.fromJson(json['comments'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.news != null) {
-      data['news'] = this.news!.toJson();
+    if (this.comments != null) {
+      data['comments'] = this.comments!.toJson();
     }
     return data;
   }
 }
 
-class News {
+class Comments {
   int? currentPage;
   List<Data>? data;
   String? firstPageUrl;
@@ -24,14 +26,14 @@ class News {
   int? lastPage;
   String? lastPageUrl;
   List<Links>? links;
-  String? nextPageUrl;
+  Null? nextPageUrl;
   String? path;
   int? perPage;
-  String? prevPageUrl;
+  Null? prevPageUrl;
   int? to;
   int? total;
 
-  News(
+  Comments(
       {this.currentPage,
         this.data,
         this.firstPageUrl,
@@ -46,7 +48,7 @@ class News {
         this.to,
         this.total});
 
-  News.fromJson(Map<String, dynamic> json) {
+  Comments.fromJson(Map<String, dynamic> json) {
     currentPage = json['current_page'];
     if (json['data'] != null) {
       data = <Data>[];
@@ -97,68 +99,36 @@ class News {
 
 class Data {
   int? id;
-  String? title;
-  String? slug;
   String? content;
-  String? summary;
-  String? video;
-  String? image;
-  int? userId;
-  int? yeargroup;
-  String? yearmonth;
-  String? admin;
-  String? sticky;
-  String? homePage;
+  String? type;
+  String? status;
+  String? author;
   String? createdTime;
 
   Data(
       {this.id,
-        this.title,
-        this.slug,
         this.content,
-        this.summary,
-        this.video,
-        this.image,
-        this.userId,
-        this.yeargroup,
-        this.yearmonth,
-        this.admin,
-        this.sticky,
-        this.homePage,
+        this.type,
+        this.status,
+        this.author,
         this.createdTime});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    title = json['title'];
-    slug = json['slug'];
     content = json['content'];
-    summary = json['summary'];
-    video = json['video'];
-    image = json['image'];
-    userId = json['userId'];
-    yeargroup = json['yeargroup'];
-    yearmonth = json['yearmonth'];
-    admin = json['admin'];
-    sticky = json['sticky'];
-    homePage = json['homePage'];
+    type = json['type'];
+    status = json['status'];
+    author = json['author'];
     createdTime = json['createdTime'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['title'] = this.title;
-    data['slug'] = this.slug;
     data['content'] = this.content;
-    data['summary'] = this.summary;
-    data['video'] = this.video;
-    data['image'] = this.image;
-    data['userId'] = this.userId;
-    data['yeargroup'] = this.yeargroup;
-    data['yearmonth'] = this.yearmonth;
-    data['admin'] = this.admin;
-    data['sticky'] = this.sticky;
-    data['homePage'] = this.homePage;
+    data['type'] = this.type;
+    data['status'] = this.status;
+    data['author'] = this.author;
     data['createdTime'] = this.createdTime;
     return data;
   }

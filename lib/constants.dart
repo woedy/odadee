@@ -28,6 +28,11 @@ Future<String?> getUserYearGroup() async {
   return prefs.getString("YearGroup");
 }
 
+Future<String?> getUserImage() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString("image");
+}
+
 
 Future<String?> getUserIDPref() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -50,6 +50,8 @@ dependencies:
   firebase_messaging: ^14.6.8
   country_picker: ^2.0.19
   flutter_html: ^3.0.0-alpha.6
+  audioplayers:
+  flutter_radio_player:
 
 
 

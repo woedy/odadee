@@ -55,7 +55,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
 
   final _formKey = GlobalKey<FormState>();
   Future<CommentModel>? _futureGetAllComments;
-  final commentController = TextEditingController();
+
 
 
   @override
@@ -294,11 +294,9 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                                                       color: Colors.grey.withOpacity(0.4))),
                                               child: TextFormField(
                                                 style: TextStyle(),
-                                                controller: commentController,
                                                 maxLines: 4,
                                                 decoration: InputDecoration(
                                                   //hintText: 'Enter Username/Email',
-
 
 
                                                   hintStyle: TextStyle(
@@ -322,40 +320,10 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                                                 onSaved: (value) {
                                                   setState(() {
 
-                                                    //added_comment = value;
 
                                                   });
                                                 },
                                               ),
-                                            ),
-
-                                            SizedBox(
-                                              height: 20,
-                                            ),
-
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              children: [
-                                                InkWell(
-                                                  onTap: () {
-                                                    String commentText = commentController.text;
-                                                    if (commentText.isNotEmpty) {
-                                                      // Post the comment
-                                                      postComment(commentText);
-                                                      // Clear the input field
-                                                      commentController.clear();
-                                                    }
-                                                  },
-                                                  child: Container(
-                                                    padding: EdgeInsets.all(10),
-                                                    decoration: BoxDecoration(
-                                                      color: odaSecondary.withOpacity(0.3),
-                                                      borderRadius: BorderRadius.circular(20),
-                                                    ),
-                                                    child: Text("Add Comment", style: TextStyle(fontSize: 10)),
-                                                  ),
-                                                ),
-                                              ],
                                             ),
 
                                             SizedBox(
@@ -373,70 +341,58 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                                               height: 10,
                                             ),
 
-                                            Container(
-                                              height: 350,
-                                              child:       ListView.builder(
-                                                  //shrinkWrap: true,
+                                            ListView.builder(
+                                                itemBuilder: (context, index) {
 
-                                                 itemCount: comments.length,
+                                                  return   Column(
+                                                    children: [
+                                                      Row(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Container(
+                                                            height: 50,
+                                                            width: 50,
+                                                            decoration: BoxDecoration(
+                                                                color: odaSecondary.withOpacity(0.2),
+                                                                borderRadius: BorderRadius.circular(5),
+                                                                image: DecorationImage(
+                                                                    image: AssetImage("assets/images/avatar.png"),
+                                                                    fit: BoxFit.cover
+                                                                )
 
-                                                  itemBuilder: (context, index) {
-                                                   var comment = comments[index];
-
-                                                    return   Column(
-                                                      children: [
-                                                        Row(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            Container(
-                                                              height: 50,
-                                                              width: 50,
-                                                              decoration: BoxDecoration(
-                                                                  //color: odaSecondary.withOpacity(0.1),
-                                                                  borderRadius: BorderRadius.circular(5),
-                                                                  image: DecorationImage(
-                                                                      image: AssetImage("assets/images/Default_pfp.svg.png"),
-                                                                      fit: BoxFit.cover
-                                                                  )
-
-                                                              ),
                                                             ),
-                                                            SizedBox(
-                                                              width: 10,
+                                                          ),
+                                                          SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          Expanded(
+                                                            child: Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                Text("Micky Amoako", style: TextStyle(fontSize: 16, color: Colors.black),),
+                                                                SizedBox(
+                                                                  height: 5,
+                                                                ),
+                                                                Text("April 21, 2023", style: TextStyle(fontSize: 14, color: Colors.grey),),
+                                                                SizedBox(
+                                                                  height: 10,
+                                                                ),
+                                                                Text("Nascetur lacus pharetra nunc platea morbi si congue quam est lobortis dignissim accumsan per faucibus litora pretium auctor egestas eu eleifend imperdiet ridiculus", style: TextStyle(fontSize: 14, color: Colors.grey),),
+                                                              ],
                                                             ),
-                                                            Expanded(
-                                                              child: Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(comment.author.toString(), style: TextStyle(fontSize: 16, color: Colors.black),),
-                                                                  SizedBox(
-                                                                    height: 5,
-                                                                  ),
-                                                                  Text(comment.createdTime.toString(), style: TextStyle(fontSize: 14, color: Colors.grey),),
-                                                                  SizedBox(
-                                                                    height: 10,
-                                                                  ),
-                                                                  Text(comment.content.toString(), style: TextStyle(fontSize: 14, color: Colors.grey),),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
+                                                          ),
+                                                        ],
+                                                      ),
 
 
-                                                        SizedBox(
-                                                          height: 30,
-                                                        ),
-                                                      ],
-                                                    );
-                                                  }
-                                              ),
-                                            ),
+                                                      SizedBox(
+                                                        height: 70,
+                                                      ),
+                                                    ],
+                                                  );
+                                                }
+                                            )
 
-
-                                            SizedBox(
-                                              height: 50,
-                                            ),
 
 
 
@@ -585,35 +541,6 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
   }
 
 
-
-
-  Future<void> postComment(String commentText) async {
-    var token = await getApiPref();
-
-    final response = await http.post(
-      Uri.parse(hostName + "/api/comments"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + token.toString(),
-      },
-      body: jsonEncode({
-        "comment": commentText,
-        "articleId": widget.data.id, // Assuming this is how you associate comments with articles
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      // Comment added successfully
-      // Trigger a reload of comments
-      setState(() {
-        _futureGetAllComments = getAllComments(widget.data.id.toString());
-      });
-    } else {
-      // Handle error
-      print("Failed to add a comment");
-    }
-  }
 
 
 
