@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:odadee/Screens/Authentication/SignIn/sgin_in_screen.dart';
 import 'package:odadee/Screens/Projects/pay_dues.dart';
+import 'package:odadee/Screens/Settings/settings_screen.dart';
 import 'package:odadee/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
+import '../Dashboard/dashboard_screen.dart';
 import '../Radio/playing_screen.dart';
+
+
+
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
@@ -15,12 +22,48 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
 
-  bool show_filter = false;
-  String? graduation_year;
-  final _formKey = GlobalKey<FormState>();
+  String? userYearGroup;
+  String? userImage;
+  String? firstName;
+  String? middleName;
+  String? lastName;
+  String? email;
+  String? phone;
 
-  bool is_info_page = true;
 
+  @override
+  void initState() {
+    super.initState();
+    getUserData().then((userData) {
+      // Use the user data retrieved from shared preferences.
+      // You can set it to your local state or display it as needed.
+      setState(() {
+        userYearGroup = userData["YearGroup"];
+        userImage = userData["image"];
+        firstName = userData["firstName"];
+        middleName = userData["middleName"];
+        lastName = userData["lastName"];
+        email = userData["email"];
+        phone = userData["phone"];
+        // Set other user data variables as needed.
+      });
+    });
+  }
+
+
+  Future<Map<String, dynamic>> getUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> userData = {
+      "YearGroup": prefs.getString("YearGroup") ?? "",
+      "image": prefs.getString("image") ?? "",
+      "email": prefs.getString("email") ?? "",
+      "phone": prefs.getString("phone") ?? "",
+      "firstName": prefs.getString("firstName") ?? "",
+      "middleName": prefs.getString("middleName") ?? "",
+      "lastName": prefs.getString("lastName") ?? "",
+    };
+    return userData;
+  }
 
 
   @override
@@ -137,7 +180,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                   //color: Colors.black,
                                                     borderRadius: BorderRadius.circular(15),
                                                     image: DecorationImage(
-                                                        image: AssetImage("assets/images/alfy.png"),
+                                                        image: NetworkImage(userImage.toString()),
                                                         fit: BoxFit.cover
                                                     )
                                                 ),
@@ -154,7 +197,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                   child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.center,
                                                     children: [
-                                                      Text("Year Group: 1993", style: TextStyle(color: Colors.white, fontSize: 14),),
+                                                      Text("Year Group: " + userYearGroup.toString(), style: TextStyle(color: Colors.white, fontSize: 14),),
                                                     ],
                                                   ),
                                                 )
@@ -168,7 +211,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     height: 20,
                                   ),
 
-                                  Text("Alfred Opare Saforo", style: TextStyle(fontSize: 24),)
+                                  Text("$firstName $middleName $lastName", style: TextStyle(fontSize: 24),)
 
                                 ],
                               ),
@@ -203,7 +246,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                             width: 150,
                                             child: Text("email:", style: TextStyle(fontSize: 18, color: Colors.grey.withOpacity(0.9)),)),
 
-                                        Expanded(child: Text("alfredoparifsdfsdfsd@gmail.com", style: TextStyle(fontSize: 18, ),)),
+                                        Expanded(child: Text("$email", style: TextStyle(fontSize: 18, ),)),
 
                                       ],
                                     ),
@@ -221,7 +264,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                             width: 150,
                                             child: Text("Phone:", style: TextStyle(fontSize: 18, color: Colors.grey.withOpacity(0.9)),)),
 
-                                        Text("0242042343", style: TextStyle(fontSize: 18, ),),
+                                        Text("$phone", style: TextStyle(fontSize: 18, ),),
 
                                       ],
                                     ),
@@ -253,6 +296,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     child: InkWell(
                                       onTap: () {
 
+                                        logout();
+                                        // Navigate to the login or home screen as needed.
+                                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                                            SignInScreen()), (Route<dynamic> route) => false);
 
                                       },
                                       child: Align(
@@ -304,15 +351,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     children: [
                       InkWell(
                         onTap: (){
-                          /*      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => DashboardScreen()));
-                      */  },
+                                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => DashboardScreen()));
+                        },
                         child: Column(
                           children: [
-                            Icon(Icons.home, color: odaSecondary,),
+                            Icon(Icons.home, color: Colors.grey,),
                             SizedBox(
                               height: 4,
                             ),
-                            Text('Home', style: TextStyle(color: odaSecondary, fontSize: 12),),
+                            Text('Home', style: TextStyle(color: Colors.grey, fontSize: 12),),
                           ],
                         ),
                       ),
@@ -346,6 +393,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       ),
                       InkWell(
                         onTap: (){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SettingsScreen()));
 
 
                         },
@@ -366,11 +414,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         },
                         child: Column(
                           children: [
-                            Icon(Icons.person, color: Colors.grey,),
+                            Icon(Icons.person, color: odaSecondary,),
                             SizedBox(
                               height: 4,
                             ),
-                            Text('Profile', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                            Text('Profile', style: TextStyle(color: odaSecondary, fontSize: 12)),
                           ],
                         ),
                       ),
@@ -385,6 +433,20 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         ),
       ),
     );
+  }
+
+
+
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove("API_Key"); // Remove the API key (token)
+    await prefs.remove("YearGroup");
+    await prefs.remove("image");
+    await prefs.remove("email");
+    await prefs.remove("phone");
+    await prefs.remove("firstName");
+    await prefs.remove("middleName");
+    await prefs.remove("lastName");
   }
 
 }

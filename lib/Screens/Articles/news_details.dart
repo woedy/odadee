@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:odadee/Screens/Articles/models/comment_model.dart';
+import 'package:odadee/Screens/Profile/user_profile_screen.dart';
 import 'package:odadee/Screens/Projects/fund_for_screen.dart';
 import 'package:odadee/Screens/Projects/models/project_detail_model.dart';
 import 'package:odadee/Screens/Projects/pay_dues.dart';
 import 'package:odadee/Screens/Radio/radio_screen.dart';
+import 'package:odadee/Screens/Settings/settings_screen.dart';
 import 'package:odadee/constants.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
@@ -521,6 +523,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                               InkWell(
                                 onTap: (){
 
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SettingsScreen()));
 
                                 },
                                 child: Column(
@@ -536,6 +539,7 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                               InkWell(
                                 onTap: (){
 
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserProfileScreen()));
 
                                 },
                                 child: Column(

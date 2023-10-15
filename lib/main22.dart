@@ -1,27 +1,28 @@
 // @dart=2.12
-import 'dart:convert';
+import 'dart:developer';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:odadee/Screens/AllUsers/models/all_users_model.dart';
-import 'package:odadee/Screens/AllUsers/user_detail_screen.dart';
-
+import 'package:odadee/Screens/Articles/all_news_screen.dart';
+import 'package:odadee/Screens/Authentication/ForgetPassword/forgot_password.dart';
+import 'package:odadee/Screens/Authentication/SignIn/sgin_in_screen.dart';
+import 'package:odadee/Screens/Authentication/SignUp/sign_up_1.dart';
+import 'package:odadee/Screens/Authentication/SignUp/sign_up_2.dart';
+import 'package:odadee/Screens/Authentication/SignUp/sign_up_3.dart';
 import 'package:odadee/Screens/Dashboard/dashboard_screen.dart';
-import 'package:odadee/Screens/Events/event_details.dart';
-import 'package:odadee/Screens/Events/models/events_model.dart';
-import 'package:odadee/Screens/Projects/project_details.dart';
+import 'package:odadee/Screens/Events/events_list.dart';
+import 'package:odadee/Screens/Profile/user_profile_screen.dart';
 
+import 'package:odadee/Screens/Radio/playing_screen.dart';
+import 'package:odadee/Screens/Settings/settings_screen.dart';
 import 'package:odadee/Screens/SplashScreen/splash_screen.dart';
 
 import 'package:odadee/constants.dart';
-import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 import 'Components/theme.dart';
-
-import 'package:http/http.dart' as http;
-
-import 'Screens/Projects/models/all_projects_model.dart';
 
 
 Future<void> main() async {
@@ -81,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return FutureBuilder(
         future: _user_api,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          //return YearGroup();
+          //return SettingsScreen();
           return api_key == null ? SplashScreen() : DashboardScreen();
 
 
@@ -93,6 +94,3 @@ class _MyHomePageState extends State<MyHomePage> {
     api_key = await getApiPref();
   }
 }
-
-
-

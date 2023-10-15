@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:odadee/Screens/Dashboard/dashboard_screen.dart';
+import 'package:odadee/Screens/Profile/user_profile_screen.dart';
+import 'package:odadee/Screens/Settings/settings_screen.dart';
 import 'package:odadee/constants.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
@@ -275,6 +277,7 @@ class _PayDuesScreenState extends State<PayDuesScreen> {
                     InkWell(
                       onTap: (){
 
+                        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SettingsScreen()));
 
                       },
                       child: Column(
@@ -290,6 +293,7 @@ class _PayDuesScreenState extends State<PayDuesScreen> {
                     InkWell(
                       onTap: (){
 
+                        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserProfileScreen()));
 
                       },
                       child: Column(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:odadee/Screens/Profile/user_profile_screen.dart';
 import 'package:odadee/Screens/Projects/pay_dues.dart';
+import 'package:odadee/Screens/Settings/settings_screen.dart';
 import 'package:odadee/constants.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
@@ -341,6 +343,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                       InkWell(
                         onTap: (){
 
+                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SettingsScreen()));
 
                         },
                         child: Column(
@@ -356,6 +359,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                       InkWell(
                         onTap: (){
 
+                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserProfileScreen()));
 
                         },
                         child: Column(
@@ -537,7 +541,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         width: 150,
                         child: Text("Profession:", style: TextStyle(fontSize: 18, color: Colors.grey.withOpacity(0.9)),)),
 
-                    Text(widget.data.position, style: TextStyle(fontSize: 18, ),),
+                    Expanded(child: Text(widget.data.position, style: TextStyle(fontSize: 18, ),)),
 
                   ],
                 ),
@@ -553,7 +557,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         width: 150,
                         child: Text("Job Title:", style: TextStyle(fontSize: 18, color: Colors.grey.withOpacity(0.9)),)),
 
-                    Text(widget.data.jobTitle, style: TextStyle(fontSize: 18, ),),
+                    Expanded(child: Text(widget.data.jobTitle, style: TextStyle(fontSize: 18, ),)),
 
                   ],
                 ),
@@ -570,7 +574,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         width: 150,
                         child: Text("Place of work:", style: TextStyle(fontSize: 18, color: Colors.grey.withOpacity(0.9)),)),
 
-                    Text(widget.data.workPlace, style: TextStyle(fontSize: 18, ),),
+                    Expanded(child: Text(widget.data.workPlace, style: TextStyle(fontSize: 18, ),)),
 
                   ],
                 ),
@@ -586,7 +590,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         width: 150,
                         child: Text("House:", style: TextStyle(fontSize: 18, color: Colors.grey.withOpacity(0.9)),)),
 
-                    Text(widget.data.house, style: TextStyle(fontSize: 18, ),),
+                    Expanded(child: Text(widget.data.house, style: TextStyle(fontSize: 18, ),)),
 
                   ],
                 ),
@@ -602,7 +606,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         width: 150,
                         child: Text("City:", style: TextStyle(fontSize: 18, color: Colors.grey.withOpacity(0.9)),)),
 
-                    Text(widget.data.city, style: TextStyle(fontSize: 18, ),),
+                    Expanded(child: Text(widget.data.city, style: TextStyle(fontSize: 18, ),)),
 
                   ],
                 ),
@@ -619,7 +623,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         width: 150,
                         child: Text("Status:", style: TextStyle(fontSize: 18, color: Colors.grey.withOpacity(0.9)),)),
 
-                    Text(widget.data.status, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black ),),
+                    Expanded(child: Text(widget.data.status, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.black ),)),
 
                   ],
                 ),

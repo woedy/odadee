@@ -6,10 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_radio_player/flutter_radio_player.dart';
 import 'package:flutter_radio_player/models/frp_source_modal.dart';
 import 'package:odadee/Screens/Dashboard/dashboard_screen.dart';
+import 'package:odadee/Screens/Profile/user_profile_screen.dart';
 import 'package:odadee/Screens/Projects/pay_dues.dart';
 import 'package:odadee/Screens/Radio/RadioConfig/frp_player.dart';
 import 'package:odadee/Screens/Radio/models/radios_models.dart';
 import 'package:odadee/Screens/Radio/playing_screen.dart';
+import 'package:odadee/Screens/Settings/settings_screen.dart';
 import 'package:odadee/constants.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:http/http.dart' as http;
@@ -346,6 +348,7 @@ class _RadioScreenState extends State<RadioScreen> {
                             ),
                             InkWell(
                               onTap: (){
+                                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SettingsScreen()));
 
 
                               },
@@ -361,6 +364,7 @@ class _RadioScreenState extends State<RadioScreen> {
                             ),
                             InkWell(
                               onTap: (){
+                                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserProfileScreen()));
 
 
                               },

@@ -37,15 +37,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
 
   Future<void> fetchDataFromServer() async {
-    var token = await getApiPref();
-
     final response = await http.get(
-        Uri.parse(hostName + '/api/settings'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + token.toString()
-      },
+        Uri.parse('http://api.odadee.net/api/settings')
     );
 
     if (response.statusCode == 200) {
@@ -55,36 +48,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (pushNotificationValue == "1"){
           state = true;
         }else {
-          state = false;
+          state = true;
         }
 
       });
     } else {
       // Handle any errors when fetching data
       // You might want to set a default value for 'state' in case of an error.
-    }
-  }
-
-  Future<void> updateNotificationStatus(bool value) async {
-    var token = await getApiPref();
-
-    final response = await http.post(
-      Uri.parse(hostName + '/api/settings'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + token.toString(),
-      },
-      body: json.encode({'push_notification': value ? "1" : "0"}),
-    );
-
-    if (response.statusCode == 200) {
-      // Successfully updated the notification status
-      setState(() {
-        state = value;
-      });
-    } else {
-      // Handle errors in updating the status
     }
   }
 
@@ -173,12 +143,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   ),
                                   CupertinoSwitch(
                                     value: state ?? false,
-                                    onChanged: (value) {
-                                      // Call the function to update the notification status
-                                      updateNotificationStatus(value);
+                                    onChanged: (value){
+                                      state = value;
+                                      setState(() {
+
+                                      },
+                                      );
                                     },
                                     thumbColor: CupertinoColors.white,
                                     activeColor: CupertinoColors.systemGreen,
+
+
                                   )
                                 ],
                               ),
@@ -219,7 +194,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       InkWell(
                         onTap: (){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => DashboardScreen()));
+                                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => DashboardScreen()));
                         },
                         child: Column(
                           children: [

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -37,7 +38,10 @@ Future<SignInModel> signInUser(String user, String password, String logged_from)
     if (result != null) {
       //print(result['meta']['token'].toString());
       await saveIDApiKey(result['token'].toString());
-      await saveIDYearGroup(result['userData']['yearGroup'].toString());
+      await saveUserData(result['userData']);
+
+
+
     }
     return SignInModel.fromJson(jsonDecode(response.body));
   } else if (response.statusCode == 203) {
@@ -59,13 +63,17 @@ Future<bool> saveIDApiKey(String apiKey) async {
   return prefs.commit();
 }
 
-Future<bool> saveIDYearGroup(String apiKey) async {
+Future<bool> saveUserData(Map<String, dynamic> userData) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setString("YearGroup", apiKey);
+  prefs.setString("YearGroup", userData['yearGroup'].toString());
+  prefs.setString("image", userData['image'].toString());
+  prefs.setString("email", userData['email'].toString());
+  prefs.setString("phone", userData['phone'].toString());
+  prefs.setString("firstName", userData['firstName'].toString());
+  prefs.setString("middleName", userData['middleName'].toString());
+  prefs.setString("lastName", userData['lastName'].toString());
   return prefs.commit();
 }
-
-
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -477,9 +485,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
 
                 WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => DashboardScreen())
-                  );
 
                   showDialog(
                       barrierDismissible: true,
@@ -499,6 +504,19 @@ class _SignInScreenState extends State<SignInScreen> {
                         );
                       }
                   );
+
+                  Timer(Duration(seconds: 1), () {
+                    Navigator.of(context).pop();
+
+
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => DashboardScreen())
+                    );
+
+                  });
+
+
+
 
                 });
 
