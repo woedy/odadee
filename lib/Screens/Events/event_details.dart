@@ -201,15 +201,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                     child: InkWell(
                                       onTap: () {
 
-                                        /*   if (_formKey.currentState!.validate()) {
-                              _formKey.currentState!.save();
-                              KeyboardUtil.hideKeyboard(context);
-
-                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SignUp2()));
-
-                            }*/
-
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => FundForScreen()));
+                                        _goToEventModal(context);
                                       },
                                       child: Align(
                                         child: Container(
@@ -345,6 +337,82 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
 
 
+
+  void _goToEventModal (BuildContext context) {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 250,
+          child: Stack(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    color: odaPrimary,
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20.0),
+                        topLeft: Radius.circular(20.0)
+                    )
+                ),
+                height: 300,
+              ),
+              Positioned(
+                top: 15,
+                child: Container(
+                  height: 250,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(20.0),
+                          topLeft: Radius.circular(20.0)
+                      )
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity(0.05)
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Go to Event", style: TextStyle(color: Colors.black, fontSize: 20),),
+                          ],
+                        ),
+                      ),
+
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        padding: EdgeInsets.all(30),
+
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+
+                          children: [
+                            Expanded(child: Text("This feature will be available soon", textAlign: TextAlign.center,style: TextStyle(fontSize: 28),))
+                          ],
+                        ),
+                      )
+
+
+                    ],
+
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
 
 
 

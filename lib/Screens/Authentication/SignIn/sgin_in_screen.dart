@@ -39,6 +39,10 @@ Future<SignInModel> signInUser(String user, String password, String logged_from)
       await saveIDApiKey(result['token'].toString());
       await saveUserData(result['userData']);
 
+      await fetchDataFromServer();
+
+
+
 
 
     }
@@ -56,9 +60,41 @@ Future<SignInModel> signInUser(String user, String password, String logged_from)
 }
 
 
+Future<void> fetchDataFromServer() async {
+  var token = await getApiPref();
+
+  final response = await http.get(
+    Uri.parse(hostName + '/api/settings'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + token.toString()
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final jsonData = json.decode(response.body);
+    final pushNotificationValue = jsonData['setting']['push_notification'];
+
+    await saveSettings(pushNotificationValue);
+
+  } else {
+    // Handle any errors when fetching data
+    // You might want to set a default value for 'state' in case of an error.
+  }
+}
+
+
+
 Future<bool> saveIDApiKey(String apiKey) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString("API_Key", apiKey);
+  return prefs.commit();
+}
+
+Future<bool> saveSettings(String notification) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setString("notification", notification);
   return prefs.commit();
 }
 
@@ -451,9 +487,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
 
                 WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => SignUp2(data: data.userData!))
-                  );
+
 
                   showDialog(
                       barrierDismissible: true,
@@ -474,6 +508,11 @@ class _SignInScreenState extends State<SignInScreen> {
                       }
                   );
 
+
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => SignUp2(data: data.userData!))
+                  );
+
                 });
 
 
@@ -484,21 +523,16 @@ class _SignInScreenState extends State<SignInScreen> {
 
 
                 WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => DashboardScreen())
-                  );
-
                   showDialog(
                       barrierDismissible: true,
                       context: context,
-                      builder: (BuildContext context){
+                      builder: (BuildContext context) {
+                        // Show the dialog
                         return AlertDialog(
                           title: Row(
                             children: [
-                              Icon(Icons.check_circle, color: Colors.green,),
-                              SizedBox(
-                                width: 10,
-                              ),
+                              Icon(Icons.check_circle, color: Colors.green),
+                              SizedBox(width: 10),
                               Text("Success"),
                             ],
                           ),
@@ -506,8 +540,32 @@ class _SignInScreenState extends State<SignInScreen> {
                         );
                       }
                   );
+                  Future.delayed(Duration(milliseconds: 500), () {
+                    // Pop the dialog
+                    //Navigator.of(context).pop();
 
+                    // Navigate to the dashboard
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => DashboardScreen()),
+                    );
+                  });
+
+
+
+                  // Delay the navigation by 2 seconds
+                  /*Future.delayed(Duration(seconds: 1), () {
+                    // Pop the dialog
+                    //Navigator.of(context).pop();
+
+                    // Navigate to the dashboard
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => DashboardScreen()),
+                    );
+                  });*/
                 });
+
 
 
               }

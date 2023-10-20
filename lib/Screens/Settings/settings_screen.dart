@@ -8,6 +8,7 @@ import 'package:odadee/Screens/Projects/models/project_detail_model.dart';
 import 'package:odadee/Screens/Projects/pay_dues.dart';
 import 'package:odadee/Screens/Radio/radio_screen.dart';
 import 'package:odadee/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:http/http.dart' as http;
 
@@ -32,29 +33,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    fetchDataFromServer();
+    getSettings();
+
   }
 
 
-  Future<void> fetchDataFromServer() async {
-    final response = await http.get(Uri.parse('http://api.odadee.net/api/settings'));
 
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      final pushNotificationValue = jsonData['setting']['push_notification'];
-      setState(() {
-        if (pushNotificationValue == "1"){
-          state = true;
-        }else {
-          state = true;
-        }
 
-      });
-    } else {
-      // Handle any errors when fetching data
-      // You might want to set a default value for 'state' in case of an error.
+  Future<void> getSettings() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? _the_set = prefs.getString("notification");
+    setState(() {
+      if (_the_set == "1") {
+        state = true;
+      } else {
+        state = false;
+      }
+    });
+  }
+
+
+  Future<void> updateNotificationStatus(bool newValue) async {
+
+
+
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = await getApiPref();
+
+    final String apiUrl = hostName + '/api/settings';
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({'push_notification': newValue ? '1' : '0'}),
+      );
+
+      if (response.statusCode == 200) {
+
+        print("############################");
+        print(response.statusCode);
+        print(response.body);
+
+        // Update the status in shared preferences.
+        prefs.setString("notification", newValue ? '1' : '0');
+
+      } else {
+        // Handle the API request error here.
+
+        print("############################");
+        print(response.statusCode);
+        print(response.body);
+      }
+    } catch (error) {
+      // Handle network or other errors.
+
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     onChanged: (value){
                                       state = value;
                                       setState(() {
-
+                                        updateNotificationStatus(value);
                                       },
                                       );
                                     },
