@@ -7,7 +7,6 @@ import 'package:odadee/Screens/AllUsers/user_detail_screen.dart';
 import 'package:odadee/Screens/Profile/user_profile_screen.dart';
 import 'package:odadee/Screens/Projects/pay_dues.dart';
 import 'package:odadee/Screens/Settings/settings_screen.dart';
-import 'package:odadee/components/keyboard_utils.dart';
 import 'package:odadee/constants.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
@@ -33,50 +32,18 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
 
   ScrollController _scrollController = ScrollController();
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchYearGroupData(currentPage);
-    _scrollController.addListener(_scrollListener);
-  }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
 
-  void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      if (currentPage < lastPage && !isLoading) {
-        currentPage++;
-        _fetchYearGroupData(currentPage);
-      }
-    }
-  }
-
-  Future<void> _fetchYearGroupData(int page, {String? yeargroup, String? city, String? house, String? position}) async {
+  Future<void> _fetchYearGroupData(int page) async {
     setState(() {
       isLoading = true;
     });
 
     var token = await getApiPref();
 
-    final filters = <String, String?>{
-      if (yeargroup != null && yeargroup.isNotEmpty) 'yeargroup': yeargroup,
-      if (city != null && city.isNotEmpty) 'city': city,
-      if (house != null && house.isNotEmpty) 'house': house,
-      if (position != null && position.isNotEmpty) 'position': position,
-    };
-
-    print(filters);
-
-    // Construct the URL with query parameters based on the non-empty filters
-    final queryParameters = Uri(queryParameters: filters).query;
-    final uri = Uri.parse(hostName + '/api/users?page=$page' + (queryParameters.isNotEmpty ? '&$queryParameters' : ''));
 
     final response = await http.get(
-      uri,
+      Uri.parse(hostName + '/api/users?page=$page'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Accept': 'application/json',
@@ -93,26 +60,14 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
         yearGroupList.addAll(eventData.data!);
         isLoading = false;
       });
-      print(eventData.data);
+      print(eventData);
     } else {
       throw Exception('Failed to load yeargroup data');
     }
   }
 
-
-  void applyFilters({String? yeargroup, String? city, String? house, String? position}) {
-    // Clear the existing data
-    yearGroupList.clear();
-
-    // Call _fetchYearGroupData with filter parameters
-    _fetchYearGroupData(1, yeargroup: yeargroup, city: city, house: house, position: position);
-  }
-
   @override
   Widget build(BuildContext context) {
-
-    print("##########");
-    print(yearGroupList);
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -446,6 +401,16 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                                                         LengthLimitingTextInputFormatter(225),
                                                         PasteTextInputFormatter(),
                                                       ],
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return 'House required';
+                                                        }
+                                                        if (value.length < 3) {
+                                                          return 'House short';
+                                                        }
+
+                                                        return null;
+                                                      },
                                                       textInputAction: TextInputAction.next,
                                                       autofocus: false,
                                                       onSaved: (value) {
@@ -486,6 +451,16 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                                                         LengthLimitingTextInputFormatter(225),
                                                         PasteTextInputFormatter(),
                                                       ],
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return 'Location required';
+                                                        }
+                                                        if (value.length < 3) {
+                                                          return 'Location short';
+                                                        }
+
+                                                        return null;
+                                                      },
                                                       textInputAction: TextInputAction.next,
                                                       autofocus: false,
                                                       onSaved: (value) {
@@ -527,6 +502,16 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                                                         LengthLimitingTextInputFormatter(225),
                                                         PasteTextInputFormatter(),
                                                       ],
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return 'Location required';
+                                                        }
+                                                        if (value.length < 3) {
+                                                          return 'Location short';
+                                                        }
+
+                                                        return null;
+                                                      },
                                                       textInputAction: TextInputAction.next,
                                                       autofocus: false,
                                                       onSaved: (value) {
@@ -552,19 +537,6 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                                                         child: InkWell(
                                                           onTap: () {
 
-                                                            if (_formKey.currentState!.validate()) {
-                                                              _formKey.currentState!.save();
-                                                              KeyboardUtil.hideKeyboard(context);
-                                                              print("applyFilters");
-                                                              applyFilters(
-                                                                yeargroup: '1993', // You can replace these with the selected filter values
-                                                                city: 'Accra',
-                                                                house: 'Ako Adjei',
-                                                                position: 'IT Specialist',
-                                                              );
-                                                            }
-
-                                                            //Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SignUp2()));
 
                                                           },
                                                           child: Align(
@@ -605,108 +577,7 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                   )
                 ],
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 15),
 
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: Offset(0, 3), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      InkWell(
-                        onTap: (){
-                          /*      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => DashboardScreen()));
-                      */  },
-                        child: Column(
-                          children: [
-                            Icon(Icons.home, color: odaSecondary,),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Text('Home', style: TextStyle(color: odaSecondary, fontSize: 12),),
-                          ],
-                        ),
-                      ),
-                      InkWell(
-                        onTap: (){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => RadioScreen()));
-                        },
-                        child: Column(
-                          children: [
-                            Icon(Icons.radio, color: Colors.grey),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Text('Radio', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                      InkWell(
-                        onTap: (){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => PayDuesScreen()));
-                        },
-                        child: Column(
-                          children: [
-                            Icon(Icons.phone_android, color: Colors.grey,),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Text('Pay Dues', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                      InkWell(
-                        onTap: (){
-
-                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SettingsScreen()));
-
-                        },
-                        child: Column(
-                          children: [
-                            Icon(Icons.settings, color: Colors.grey,),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Text('Settings', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                      InkWell(
-                        onTap: (){
-
-                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserProfileScreen()));
-
-                        },
-                        child: Column(
-                          children: [
-                            Icon(Icons.person, color: Colors.grey,),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Text('Profile', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-
-
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -716,103 +587,6 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
 
 
 
-  void _showGraduationYearModal (BuildContext context) {
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: 300,
-          child: Stack(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    color: odaPrimary,
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(20.0),
-                        topLeft: Radius.circular(20.0)
-                    )
-                ),
-                height: 300,
-              ),
-              Positioned(
-                top: 15,
-                child: Container(
-                  height: 300,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(20.0),
-                          topLeft: Radius.circular(20.0)
-                      )
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.05)
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Select Graduation Year", style: TextStyle(color: Colors.black, fontSize: 20),),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 40,
-                      ),
-
-                      Container(
-                        //color: Colors.red,
-                        width: MediaQuery.of(context).size.width,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-
-                          children: [
-                            Text("1993", style: TextStyle( fontSize: 20),),
-                            Container(
-                              width: 150,
-                              child: Divider(
-                                color: Colors.black,
-                                thickness: 1,
-
-                              ),
-                            ),
-                            Text("1994", style: TextStyle(color: Colors.black, fontSize: 20),),
-                            Container(
-                              width: 150,
-                              child: Divider(
-                                color: Colors.black,
-                                thickness: 1,
-
-                              ),
-                            ),
-                            Text("1995", style: TextStyle(fontSize: 20),),
-
-                          ],
-                        ),
-                      )
-
-
-                    ],
-
-                  ),
-                ),
-              )
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-
+m
 
 }

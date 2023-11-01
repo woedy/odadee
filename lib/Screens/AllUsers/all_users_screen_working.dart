@@ -7,7 +7,6 @@ import 'package:odadee/Screens/AllUsers/user_detail_screen.dart';
 import 'package:odadee/Screens/Profile/user_profile_screen.dart';
 import 'package:odadee/Screens/Projects/pay_dues.dart';
 import 'package:odadee/Screens/Settings/settings_screen.dart';
-import 'package:odadee/components/keyboard_utils.dart';
 import 'package:odadee/constants.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
@@ -55,28 +54,16 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
     }
   }
 
-  Future<void> _fetchYearGroupData(int page, {String? yeargroup, String? city, String? house, String? position}) async {
+  Future<void> _fetchYearGroupData(int page) async {
     setState(() {
       isLoading = true;
     });
 
     var token = await getApiPref();
 
-    final filters = <String, String?>{
-      if (yeargroup != null && yeargroup.isNotEmpty) 'yeargroup': yeargroup,
-      if (city != null && city.isNotEmpty) 'city': city,
-      if (house != null && house.isNotEmpty) 'house': house,
-      if (position != null && position.isNotEmpty) 'position': position,
-    };
-
-    print(filters);
-
-    // Construct the URL with query parameters based on the non-empty filters
-    final queryParameters = Uri(queryParameters: filters).query;
-    final uri = Uri.parse(hostName + '/api/users?page=$page' + (queryParameters.isNotEmpty ? '&$queryParameters' : ''));
 
     final response = await http.get(
-      uri,
+      Uri.parse(hostName + '/api/users?page=$page'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Accept': 'application/json',
@@ -93,26 +80,14 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
         yearGroupList.addAll(eventData.data!);
         isLoading = false;
       });
-      print(eventData.data);
+      print(eventData);
     } else {
       throw Exception('Failed to load yeargroup data');
     }
   }
 
-
-  void applyFilters({String? yeargroup, String? city, String? house, String? position}) {
-    // Clear the existing data
-    yearGroupList.clear();
-
-    // Call _fetchYearGroupData with filter parameters
-    _fetchYearGroupData(1, yeargroup: yeargroup, city: city, house: house, position: position);
-  }
-
   @override
   Widget build(BuildContext context) {
-
-    print("##########");
-    print(yearGroupList);
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -446,6 +421,16 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                                                         LengthLimitingTextInputFormatter(225),
                                                         PasteTextInputFormatter(),
                                                       ],
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return 'House required';
+                                                        }
+                                                        if (value.length < 3) {
+                                                          return 'House short';
+                                                        }
+
+                                                        return null;
+                                                      },
                                                       textInputAction: TextInputAction.next,
                                                       autofocus: false,
                                                       onSaved: (value) {
@@ -486,6 +471,16 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                                                         LengthLimitingTextInputFormatter(225),
                                                         PasteTextInputFormatter(),
                                                       ],
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return 'Location required';
+                                                        }
+                                                        if (value.length < 3) {
+                                                          return 'Location short';
+                                                        }
+
+                                                        return null;
+                                                      },
                                                       textInputAction: TextInputAction.next,
                                                       autofocus: false,
                                                       onSaved: (value) {
@@ -527,6 +522,16 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                                                         LengthLimitingTextInputFormatter(225),
                                                         PasteTextInputFormatter(),
                                                       ],
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return 'Location required';
+                                                        }
+                                                        if (value.length < 3) {
+                                                          return 'Location short';
+                                                        }
+
+                                                        return null;
+                                                      },
                                                       textInputAction: TextInputAction.next,
                                                       autofocus: false,
                                                       onSaved: (value) {
@@ -552,17 +557,13 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                                                         child: InkWell(
                                                           onTap: () {
 
-                                                            if (_formKey.currentState!.validate()) {
-                                                              _formKey.currentState!.save();
-                                                              KeyboardUtil.hideKeyboard(context);
-                                                              print("applyFilters");
-                                                              applyFilters(
-                                                                yeargroup: '1993', // You can replace these with the selected filter values
-                                                                city: 'Accra',
-                                                                house: 'Ako Adjei',
-                                                                position: 'IT Specialist',
-                                                              );
-                                                            }
+                                                            /*   if (_formKey.currentState!.validate()) {
+                                      _formKey.currentState!.save();
+                                      KeyboardUtil.hideKeyboard(context);
+
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SignUp2()));
+
+                                    }*/
 
                                                             //Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SignUp2()));
 

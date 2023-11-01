@@ -272,7 +272,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   //color: Colors.red,
                                   child: Row(
                                     children: [
-                                      Column(
+                                   /*   Column(
                                         children: [
                                           Expanded(
                                             child: Container(
@@ -298,7 +298,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 
                                         ],
-                                      ),
+                                      ),*/
                                       Expanded(
                                         child: ListView.builder(
                                             scrollDirection: Axis.horizontal,
@@ -311,22 +311,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                 },
                                                 child: Column(
                                                   children: [
-                                                    Expanded(
-                                                      child: Container(
-                                                        margin: EdgeInsets.all(10),
-                                                        height: 30,
-                                                        width: 80,
-                                                        decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(10),
-                                                            image: DecorationImage(
-                                                                image: NetworkImage(userData.users.data[index].image),
-                                                                fit: BoxFit.cover
-                                                            )
+
+                                                    if(userData.users.data[index].image != "")...[
+                                                      Expanded(
+                                                        child: Container(
+                                                          margin: EdgeInsets.all(10),
+                                                          height: 30,
+                                                          width: 80,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(10),
+                                                              image: DecorationImage(
+                                                                  image: NetworkImage(userData.users.data[index].image),
+                                                                  fit: BoxFit.cover
+                                                              )
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    Text(userData.users.data[index].firstName, style: TextStyle( fontSize: 16, color: odaSecondary),),
-
+                                                    ]else...[
+                                                      Expanded(
+                                                        child: Container(
+                                                          margin: EdgeInsets.all(10),
+                                                          height: 30,
+                                                          width: 80,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(10),
+                                                            color: odaPrimary.withOpacity(0.1)
+                                                          ),
+                                                          child: Center(
+                                                            child: Text(userData.users.data[index].firstName.toString().substring(0, 1) + userData.users.data[index].lastName.toString().substring(0, 1), style: TextStyle( fontSize: 19, color: Colors.grey),),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                    Text(userData.users.data[index].firstName, style: TextStyle( fontSize: 16, color: Colors.grey),),
 
                                                   ],
                                                 ),
