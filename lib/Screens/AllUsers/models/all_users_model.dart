@@ -245,7 +245,7 @@ class Data {
     lastLogin = json['lastLogin'];
     lastLoginIp = json['lastLoginIp'];
     createdTime = json['createdTime'];
-    userInterests = json['user_interests'].cast<String>();
+    userInterests = (json['user_interests'] as List<dynamic>?)?.map((dynamic item) => item.toString()).toList();
     if (json['user_status'] != null) {
       userStatus = <UserStatus>[];
       json['user_status'].forEach((v) {

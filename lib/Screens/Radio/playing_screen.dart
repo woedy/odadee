@@ -2,15 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_radio_player/flutter_radio_player.dart';
-import 'package:flutter_radio_player/models/frp_source_modal.dart';
+
 import 'package:odadee/Screens/Dashboard/dashboard_screen.dart';
 import 'package:odadee/Screens/Profile/user_profile_screen.dart';
 import 'package:odadee/Screens/Projects/pay_dues.dart';
-import 'package:odadee/Screens/Radio/RadioConfig/frp_player.dart';
 import 'package:odadee/Screens/Radio/models/radios_models.dart';
+import 'package:odadee/Screens/Radio/playing_screen.dart';
 import 'package:odadee/Screens/Settings/settings_screen.dart';
 import 'package:odadee/constants.dart';
+import 'package:radio_player/radio_player.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:http/http.dart' as http;
 
@@ -58,25 +58,9 @@ class _RadioScreenState extends State<RadioScreen> {
 
   Future<RadiosModel>? _futureGetAllStations;
 
-  final FlutterRadioPlayer _flutterRadioPlayer = FlutterRadioPlayer();
+  RadioPlayer _radioPlayer = RadioPlayer();
+  bool isPlaying = false;
 
-
-  bool isPlaying = true;
-  Duration duration = Duration.zero;
-  Duration position = Duration.zero;
-
-
-  final FRPSource frpSource = FRPSource(
-    mediaSources: <MediaSources>[
-      MediaSources(
-        url: "https://stream.zeno.fm/b51ep03x438uv",
-        description: "Connecting of current student body and Administration directly with Alumni both locally and those in the diaspora.",
-        isPrimary: true,
-        title: "ODADEƐ Radio",
-        isAac: false,
-      ),
-    ],
-  );
 
 
 
@@ -86,8 +70,21 @@ class _RadioScreenState extends State<RadioScreen> {
     super.initState();
     _futureGetAllStations = getRadioStations();
 
-    _flutterRadioPlayer.initPlayer();
-    _flutterRadioPlayer.addMediaSources(frpSource);
+    _radioPlayer.setChannel(
+      title: 'ODADEƐ Radio',
+      url: 'https://stream.zeno.fm/b51ep03x438uv',
+      imagePath: 'assets/cover.jpg',
+
+    );
+
+    _radioPlayer.stateStream.listen((value) {
+      setState(() {
+        isPlaying = value;
+      });
+    });
+
+
+
   }
 
 
@@ -152,7 +149,7 @@ class _RadioScreenState extends State<RadioScreen> {
                   children: [
                     Column(
                       children: [
-                       /* FRPlayer(
+                        /* FRPlayer(
                           flutterRadioPlayer: _flutterRadioPlayer,
                           frpSource: frpSource,
                           useIcyData: true,
@@ -262,14 +259,42 @@ class _RadioScreenState extends State<RadioScreen> {
                                     height: 30,
                                   ),
 
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
+                                children: [
+                                  SizedBox(),
+                                  SizedBox(),
 
-                                  FRPlayer(
-                                    flutterRadioPlayer: _flutterRadioPlayer,
-                                    frpSource: frpSource,
-                                    useIcyData: true,
+                                  Image(image: AssetImage("assets/images/back.png"), height: 22),
+
+                                  InkWell(
+                                    onTap: (){
+                                      isPlaying ? _radioPlayer.pause() : _radioPlayer.play();
+                                    },
+                                    child: Container(
+                                      height: 60,
+                                      width: 60,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(100),
+                                          gradient: LinearGradient(
+                                              colors: [
+                                                odaPrimary,
+                                                odaSecondary
+                                              ]
+                                          )
+                                      ),
+                                      child: Center(
+                                        child: Icon(isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded, color: Colors.white, size: 40,),
+                                      ),
+                                    ),
                                   ),
+                                  Image(image: AssetImage("assets/images/forward.png"), height: 22,),
 
+                                  SizedBox(),
+                                  SizedBox(),
+                                ],
+                              )
 
                                 ],
                               ),

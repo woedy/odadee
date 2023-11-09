@@ -27,8 +27,12 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
   bool isLoading = false;
 
   bool show_filter = false;
-  String? graduation_year;
   final _formKey = GlobalKey<FormState>();
+
+  String? _year;
+  String _city = "";
+  String _house = "";
+  String _position = "";
 
 
   ScrollController _scrollController = ScrollController();
@@ -55,10 +59,18 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
     }
   }
 
+
   Future<void> _fetchYearGroupData(int page, {String? yeargroup, String? city, String? house, String? position}) async {
     setState(() {
       isLoading = true;
     });
+
+    print("############");
+    print("YEAR GROUP");
+    print(yeargroup);
+    print(city);
+    print(house);
+    print(position);
 
     var token = await getApiPref();
 
@@ -72,8 +84,16 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
     print(filters);
 
     // Construct the URL with query parameters based on the non-empty filters
-    final queryParameters = Uri(queryParameters: filters).query;
-    final uri = Uri.parse(hostName + '/api/users?page=$page' + (queryParameters.isNotEmpty ? '&$queryParameters' : ''));
+    final queryParameters = filters.entries
+        .where((entry) => entry.value != null)
+        .map((entry) => '${entry.key}=${Uri.encodeComponent(entry.value!)}')
+        .join('&');
+
+
+    final uri = Uri.parse(hostName + '/api/users?page=$page' + (queryParameters.isNotEmpty ? '&' + queryParameters : ''));
+
+
+    print(uri);
 
     final response = await http.get(
       uri,
@@ -99,7 +119,6 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
     }
   }
 
-
   void applyFilters({String? yeargroup, String? city, String? house, String? position}) {
     // Clear the existing data
     yearGroupList.clear();
@@ -111,8 +130,7 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
   @override
   Widget build(BuildContext context) {
 
-    print("##########");
-    print(yearGroupList);
+
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -239,91 +257,102 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                               ),
 
                             ),
-                            Expanded(
-                              child: Container(
-                                child: ListView.builder(
-                                  controller: _scrollController,
-                                  itemCount: yearGroupList.length,
-                                  itemBuilder: (context, index) {
-                                    final userItem = yearGroupList[index];
-                                    return InkWell(
-                                      onTap: (){
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserDetailScreen(data: userItem)));
+                            if(yearGroupList.isNotEmpty)...[
+                              Expanded(
+                                child: Container(
+                                  child: ListView.builder(
+                                    controller: _scrollController,
+                                    itemCount: yearGroupList.length,
+                                    itemBuilder: (context, index) {
+                                      final userItem = yearGroupList[index];
+                                      return InkWell(
+                                        onTap: (){
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserDetailScreen(data: userItem)));
 
-                                      },
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              if(userItem.image != "")...[
-                                                Container(
-                                                  height: 70,
-                                                  width: 70,
-                                                  margin: EdgeInsets.all(10),
-                                                  decoration: BoxDecoration(
-                                                      color: odaSecondary.withOpacity(0.2),
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      image: DecorationImage(
-                                                          image: NetworkImage(userItem.image.toString()),
-                                                          fit: BoxFit.cover
-                                                      )
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                if(userItem.image != "")...[
+                                                  Container(
+                                                    height: 70,
+                                                    width: 70,
+                                                    margin: EdgeInsets.all(10),
+                                                    decoration: BoxDecoration(
+                                                        color: odaSecondary.withOpacity(0.2),
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        image: DecorationImage(
+                                                            image: NetworkImage(userItem.image.toString()),
+                                                            fit: BoxFit.cover
+                                                        )
+                                                    ),
                                                   ),
+                                                ]else...[
+                                                  Container(
+                                                    height: 70,
+                                                    width: 70,
+                                                    margin: EdgeInsets.all(10),
+                                                    decoration: BoxDecoration(
+                                                        color: odaSecondary.withOpacity(0.2),
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        image: DecorationImage(
+                                                            image: NetworkImage(userItem.image.toString()),
+                                                            fit: BoxFit.cover
+                                                        )
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(userItem.firstName.toString().substring(0, 1) + userItem.lastName.toString().substring(0, 1), style: TextStyle( fontSize: 19, color: Colors.grey),),
+                                                    ),
+                                                  ),
+                                                ],
+                                                SizedBox(
+                                                  width: 5,
                                                 ),
-                                              ]else...[
                                                 Container(
-                                                  height: 70,
-                                                  width: 70,
-                                                  margin: EdgeInsets.all(10),
-                                                  decoration: BoxDecoration(
-                                                      color: odaSecondary.withOpacity(0.2),
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      image: DecorationImage(
-                                                          image: NetworkImage(userItem.image.toString()),
-                                                          fit: BoxFit.cover
-                                                      )
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(userItem.firstName.toString() + " " +userItem.lastName.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),),
+                                                      SizedBox(
+                                                        height: 2,
+                                                      ),
+                                                      Text(userItem.email.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),
+                                                      SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      Text("View Details", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: odaSecondary),),
+                                                    ],
                                                   ),
-                                                  child: Center(
-                                                    child: Text(userItem.firstName.toString().substring(0, 1) + userItem.lastName.toString().substring(0, 1), style: TextStyle( fontSize: 19, color: Colors.grey),),
-                                                  ),
-                                                ),
+                                                )
                                               ],
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Container(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(userItem.firstName.toString() + " " +userItem.lastName.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),),
-                                                    SizedBox(
-                                                      height: 2,
-                                                    ),
-                                                    Text(userItem.email.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),
-                                                    SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    Text("View Details", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: odaSecondary),),
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          Container(
-                                            //width: 150,
-                                            margin: EdgeInsets.symmetric(horizontal: 10),
-                                            child: Divider(
-                                              color: Colors.black.withOpacity(0.2),
-                                              thickness: 1,
-
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
+                                            Container(
+                                              //width: 150,
+                                              margin: EdgeInsets.symmetric(horizontal: 10),
+                                              child: Divider(
+                                                color: Colors.black.withOpacity(0.2),
+                                                thickness: 1,
+
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
-                            ),
+                            ]else...[
+                              Expanded(
+                                child: Container(
+                                  child: Center(
+                                    child: Text("No users available"),
+                                  ),
+                                ),
+                              ),
+                            ]
+
                           ],
                         ),
 
@@ -370,219 +399,225 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
 
                                         children: [
 
-                                          Form(
-                                            key: _formKey,
-                                            child: Container(
+                                          Expanded(
+                                            child: Form(
+                                              key: _formKey,
+                                              child: SingleChildScrollView(
+                                                child: Container(
 
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  Column(
+                                                  child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      Text("Year Group", style: TextStyle(fontSize: 12),),
+
                                                       SizedBox(
-                                                        height: 10,
+                                                        height: 20,
                                                       ),
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          _showGraduationYearModal(context);
-                                                        },
-                                                        child: Container(
-                                                          padding: EdgeInsets.all(10),
-                                                          width: MediaQuery.of(context).size.width,
-                                                          height: 60,
-                                                          decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius.circular(5),
-                                                              border: Border.all(
-                                                                  color: Colors.grey.withOpacity(0.4))
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text("Year Group", style: TextStyle(fontSize: 12),),
+                                                          SizedBox(
+                                                            height: 10,
                                                           ),
-                                                          child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                            children: [
-                                                              Text(
-                                                                graduation_year ?? 'Select Year',
-                                                                style: TextStyle(fontSize: 15, color: bodyText2),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              _showGraduationYearModal(context);
+                                                            },
+                                                            child: Container(
+                                                              padding: EdgeInsets.all(10),
+                                                              width: MediaQuery.of(context).size.width,
+                                                              height: 60,
+                                                              decoration: BoxDecoration(
+                                                                  borderRadius: BorderRadius.circular(5),
+                                                                  border: Border.all(
+                                                                      color: Colors.grey.withOpacity(0.4))
                                                               ),
-                                                              Icon(Icons.calendar_today_outlined, size: 22, color: odaSecondary,),
-                                                            ],
+                                                              child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                children: [
+                                                                  Text(
+                                                                    _year ?? 'Select Year',
+                                                                    style: TextStyle(fontSize: 15, color: bodyText2),
+                                                                  ),
+                                                                  Icon(Icons.calendar_today_outlined, size: 22, color: odaSecondary,),
+                                                                ],
+                                                              ),
+                                                            ),
                                                           ),
+
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: 20,
+                                                      ),
+                                                      Container(
+                                                        padding: EdgeInsets.symmetric(horizontal: 10),
+                                                        decoration: BoxDecoration(
+                                                          //color: Colors.white,
+                                                            borderRadius: BorderRadius.circular(5),
+                                                            border: Border.all(
+                                                                color: Colors.grey.withOpacity(0.4))),
+                                                        child: TextFormField(
+                                                          style: TextStyle(),
+                                                          decoration: InputDecoration(
+                                                            //hintText: 'Enter Username/Email',
+
+                                                            hintStyle: TextStyle(
+                                                                color: Colors.grey,
+                                                                fontWeight: FontWeight.normal),
+                                                            labelText: "City",
+                                                            labelStyle:
+                                                            TextStyle(fontSize: 15, color: bodyText2),
+                                                            enabledBorder: UnderlineInputBorder(
+                                                                borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
+                                                            focusedBorder: UnderlineInputBorder(
+                                                                borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
+                                                            border: InputBorder.none,),
+                                                          inputFormatters: [
+                                                            LengthLimitingTextInputFormatter(225),
+                                                            PasteTextInputFormatter(),
+                                                          ],
+                                                          textInputAction: TextInputAction.next,
+                                                          autofocus: false,
+                                                          onSaved: (value) {
+                                                            setState(() {
+                                                              _city = value.toString();
+                                                            });
+                                                          },
                                                         ),
                                                       ),
+                                                      SizedBox(
+                                                        height: 20,
+                                                      ),
 
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  Container(
-                                                    padding: EdgeInsets.symmetric(horizontal: 10),
-                                                    decoration: BoxDecoration(
-                                                      //color: Colors.white,
-                                                        borderRadius: BorderRadius.circular(5),
-                                                        border: Border.all(
-                                                            color: Colors.grey.withOpacity(0.4))),
-                                                    child: TextFormField(
-                                                      style: TextStyle(),
-                                                      decoration: InputDecoration(
-                                                        //hintText: 'Enter Username/Email',
+                                                      Container(
+                                                        padding: EdgeInsets.symmetric(horizontal: 10),
+                                                        decoration: BoxDecoration(
+                                                          //color: Colors.white,
+                                                            borderRadius: BorderRadius.circular(5),
+                                                            border: Border.all(
+                                                                color: Colors.grey.withOpacity(0.4))),
+                                                        child: TextFormField(
+                                                          style: TextStyle(),
+                                                          decoration: InputDecoration(
+                                                            //hintText: 'Enter Username/Email',
 
-                                                        hintStyle: TextStyle(
-                                                            color: Colors.grey,
-                                                            fontWeight: FontWeight.normal),
-                                                        labelText: "House",
-                                                        labelStyle:
-                                                        TextStyle(fontSize: 15, color: bodyText2),
-                                                        enabledBorder: UnderlineInputBorder(
-                                                            borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
-                                                        focusedBorder: UnderlineInputBorder(
-                                                            borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
-                                                        border: InputBorder.none,),
-                                                      inputFormatters: [
-                                                        LengthLimitingTextInputFormatter(225),
-                                                        PasteTextInputFormatter(),
-                                                      ],
-                                                      textInputAction: TextInputAction.next,
-                                                      autofocus: false,
-                                                      onSaved: (value) {
-                                                        setState(() {
-
-                                                        });
-                                                      },
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-
-                                                  Container(
-                                                    padding: EdgeInsets.symmetric(horizontal: 10),
-                                                    decoration: BoxDecoration(
-                                                      //color: Colors.white,
-                                                        borderRadius: BorderRadius.circular(5),
-                                                        border: Border.all(
-                                                            color: Colors.grey.withOpacity(0.4))),
-                                                    child: TextFormField(
-                                                      style: TextStyle(),
-                                                      decoration: InputDecoration(
-                                                        //hintText: 'Enter Username/Email',
-
-                                                        hintStyle: TextStyle(
-                                                            color: Colors.grey,
-                                                            fontWeight: FontWeight.normal),
-                                                        labelText: "Location",
-                                                        labelStyle:
-                                                        TextStyle(fontSize: 15, color: bodyText2),
-                                                        enabledBorder: UnderlineInputBorder(
-                                                            borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
-                                                        focusedBorder: UnderlineInputBorder(
-                                                            borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
-                                                        border: InputBorder.none,),
-                                                      inputFormatters: [
-                                                        LengthLimitingTextInputFormatter(225),
-                                                        PasteTextInputFormatter(),
-                                                      ],
-                                                      textInputAction: TextInputAction.next,
-                                                      autofocus: false,
-                                                      onSaved: (value) {
-                                                        setState(() {
-
-                                                        });
-                                                      },
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-
-
-                                                  Container(
-                                                    padding: EdgeInsets.symmetric(horizontal: 10),
-                                                    decoration: BoxDecoration(
-                                                      //color: Colors.white,
-                                                        borderRadius: BorderRadius.circular(5),
-                                                        border: Border.all(
-                                                            color: Colors.grey.withOpacity(0.4))),
-                                                    child: TextFormField(
-                                                      style: TextStyle(),
-                                                      decoration: InputDecoration(
-                                                        //hintText: 'Enter Username/Email',
-
-                                                        hintStyle: TextStyle(
-                                                            color: Colors.grey,
-                                                            fontWeight: FontWeight.normal),
-                                                        labelText: "User Profession",
-                                                        labelStyle:
-                                                        TextStyle(fontSize: 15, color: bodyText2),
-                                                        enabledBorder: UnderlineInputBorder(
-                                                            borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
-                                                        focusedBorder: UnderlineInputBorder(
-                                                            borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
-                                                        border: InputBorder.none,),
-                                                      inputFormatters: [
-                                                        LengthLimitingTextInputFormatter(225),
-                                                        PasteTextInputFormatter(),
-                                                      ],
-                                                      textInputAction: TextInputAction.next,
-                                                      autofocus: false,
-                                                      onSaved: (value) {
-                                                        setState(() {
-
-                                                        });
-                                                      },
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-
-                                                  Align(
-                                                    child: Container(
-                                                      width: MediaQuery.of(context).size.width,
-                                                      padding: EdgeInsets.all(15),
-                                                      decoration: BoxDecoration(
-                                                          color: odaSecondary,
-                                                          borderRadius: BorderRadius.circular(10)),
-                                                      child: Material(
-                                                        color: Colors.transparent,
-                                                        child: InkWell(
-                                                          onTap: () {
-
-                                                            if (_formKey.currentState!.validate()) {
-                                                              _formKey.currentState!.save();
-                                                              KeyboardUtil.hideKeyboard(context);
-                                                              print("applyFilters");
-                                                              applyFilters(
-                                                                yeargroup: '1993', // You can replace these with the selected filter values
-                                                                city: 'Accra',
-                                                                house: 'Ako Adjei',
-                                                                position: 'IT Specialist',
-                                                              );
-                                                            }
-
-                                                            //Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SignUp2()));
-
+                                                            hintStyle: TextStyle(
+                                                                color: Colors.grey,
+                                                                fontWeight: FontWeight.normal),
+                                                            labelText: "House",
+                                                            labelStyle:
+                                                            TextStyle(fontSize: 15, color: bodyText2),
+                                                            enabledBorder: UnderlineInputBorder(
+                                                                borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
+                                                            focusedBorder: UnderlineInputBorder(
+                                                                borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
+                                                            border: InputBorder.none,),
+                                                          inputFormatters: [
+                                                            LengthLimitingTextInputFormatter(225),
+                                                            PasteTextInputFormatter(),
+                                                          ],
+                                                          textInputAction: TextInputAction.next,
+                                                          autofocus: false,
+                                                          onSaved: (value) {
+                                                            setState(() {
+                                                              _house = value.toString();
+                                                            });
                                                           },
-                                                          child: Align(
-                                                            child: Container(
-                                                              child: Text(
-                                                                "Apply Filter",
-                                                                style: TextStyle(
-                                                                    fontSize: 22, color: Colors.white),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 20,
+                                                      ),
+
+
+                                                      Container(
+                                                        padding: EdgeInsets.symmetric(horizontal: 10),
+                                                        decoration: BoxDecoration(
+                                                          //color: Colors.white,
+                                                            borderRadius: BorderRadius.circular(5),
+                                                            border: Border.all(
+                                                                color: Colors.grey.withOpacity(0.4))),
+                                                        child: TextFormField(
+                                                          style: TextStyle(),
+                                                          decoration: InputDecoration(
+                                                            //hintText: 'Enter Username/Email',
+
+                                                            hintStyle: TextStyle(
+                                                                color: Colors.grey,
+                                                                fontWeight: FontWeight.normal),
+                                                            labelText: "Position",
+                                                            labelStyle:
+                                                            TextStyle(fontSize: 15, color: bodyText2),
+                                                            enabledBorder: UnderlineInputBorder(
+                                                                borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
+                                                            focusedBorder: UnderlineInputBorder(
+                                                                borderSide: BorderSide(color: Colors.grey.withOpacity(0.4))),
+                                                            border: InputBorder.none,),
+                                                          inputFormatters: [
+                                                            LengthLimitingTextInputFormatter(225),
+                                                            PasteTextInputFormatter(),
+                                                          ],
+                                                          textInputAction: TextInputAction.next,
+                                                          autofocus: false,
+                                                          onSaved: (value) {
+                                                            setState(() {
+                                                              _position = value.toString();
+                                                            });
+                                                          },
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 20,
+                                                      ),
+
+                                                      Align(
+                                                        child: Container(
+                                                          width: MediaQuery.of(context).size.width,
+                                                          padding: EdgeInsets.all(15),
+                                                          decoration: BoxDecoration(
+                                                              color: odaSecondary,
+                                                              borderRadius: BorderRadius.circular(10)),
+                                                          child: Material(
+                                                            color: Colors.transparent,
+                                                            child: InkWell(
+                                                              onTap: () {
+
+                                                                if (_formKey.currentState!.validate()) {
+                                                                  _formKey.currentState!.save();
+                                                                  KeyboardUtil.hideKeyboard(context);
+                                                                  print("applyFilters");
+                                                                  applyFilters(
+                                                                    yeargroup: _year, // You can replace these with the selected filter values
+                                                                    city: _city,
+                                                                    house: _house,
+                                                                    position: _position,
+                                                                  );
+                                                                }
+
+                                                                //Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => SignUp2()));
+
+                                                                show_filter = false;
+
+                                                              },
+                                                              child: Align(
+                                                                child: Container(
+                                                                  child: Text(
+                                                                    "Apply Filter",
+                                                                    style: TextStyle(
+                                                                        fontSize: 22, color: Colors.white),
+                                                                  ),
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
-                                                    ),
+
+
+                                                    ],
                                                   ),
-
-
-                                                ],
+                                                ),
                                               ),
                                             ),
                                           )
@@ -716,6 +751,7 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
 
 
 
+
   void _showGraduationYearModal (BuildContext context) {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
@@ -776,25 +812,51 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                           mainAxisSize: MainAxisSize.max,
 
                           children: [
-                            Text("1993", style: TextStyle( fontSize: 20),),
-                            Container(
-                              width: 150,
-                              child: Divider(
-                                color: Colors.black,
-                                thickness: 1,
 
+
+                            SizedBox(
+                              height: 150, // Adjust the height as needed
+                              child: ListView.builder(
+                                itemCount: 100, // Number of years to display
+                                itemBuilder: (BuildContext context, int index) {
+                                  final year = 1960 + index;
+                                  return InkWell(
+                                    onTap: (){
+                                      print(year.toString());
+                                      setState(() {
+                                        _year = year.toString();
+                                        Navigator.of(context).pop(year.toString());
+
+                                      });
+                                    },
+                                    child: Container(
+                                      height: 50,
+                                      child: Column(
+                                        children: [
+                                          Text(year.toString(), style: TextStyle( fontSize: 20, fontWeight: FontWeight.bold),),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Container(
+                                            width: 150,
+                                            child: Divider(
+                                              color: Colors.black,
+                                              thickness: 1,
+
+                                            ),
+
+                                          ),
+
+
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
-                            Text("1994", style: TextStyle(color: Colors.black, fontSize: 20),),
-                            Container(
-                              width: 150,
-                              child: Divider(
-                                color: Colors.black,
-                                thickness: 1,
 
-                              ),
-                            ),
-                            Text("1995", style: TextStyle(fontSize: 20),),
+
 
                           ],
                         ),
