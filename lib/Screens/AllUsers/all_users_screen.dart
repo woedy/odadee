@@ -35,12 +35,28 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
   String _position = "";
 
 
+  String? currentFilters;
+  int currentFilteredPage = 1;
+
+
   ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _fetchYearGroupData(currentPage);
+
+    // Define your initial filter criteria here (e.g., set some default values)
+    String? initialYeargroup = '';
+    String? initialCity = '';
+    String? initialHouse = '';
+    String? initialPosition = '';
+
+    // Build the initial filter criteria
+    String? initialFilters = buildFilterQueryString(initialYeargroup, initialCity, initialHouse, initialPosition);
+
+    // Fetch the filtered data on initialization
+    _fetchFilteredData(1, initialFilters);
+
     _scrollController.addListener(_scrollListener);
   }
 
@@ -50,48 +66,25 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
     super.dispose();
   }
 
+  // Scroll listener function
   void _scrollListener() {
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      if (currentPage < lastPage && !isLoading) {
-        currentPage++;
-        _fetchYearGroupData(currentPage);
+      if (currentFilteredPage < lastPage && !isLoading) {
+        currentFilteredPage++;
+        // Fetch the next page of filtered data using the current filter criteria
+        _fetchFilteredData(currentFilteredPage, currentFilters);
       }
     }
   }
-
-
-  Future<void> _fetchYearGroupData(int page, {String? yeargroup, String? city, String? house, String? position}) async {
+// Function to fetch filtered data
+  Future<void> _fetchFilteredData(int page, String? filters) async {
     setState(() {
       isLoading = true;
     });
 
-    print("############");
-    print("YEAR GROUP");
-    print(yeargroup);
-    print(city);
-    print(house);
-    print(position);
-
     var token = await getApiPref();
 
-    final filters = <String, String?>{
-      if (yeargroup != null && yeargroup.isNotEmpty) 'yeargroup': yeargroup,
-      if (city != null && city.isNotEmpty) 'city': city,
-      if (house != null && house.isNotEmpty) 'house': house,
-      if (position != null && position.isNotEmpty) 'position': position,
-    };
-
-    print(filters);
-
-    // Construct the URL with query parameters based on the non-empty filters
-    final queryParameters = filters.entries
-        .where((entry) => entry.value != null)
-        .map((entry) => '${entry.key}=${Uri.encodeComponent(entry.value!)}')
-        .join('&');
-
-
-    final uri = Uri.parse(hostName + '/api/users?page=$page' + (queryParameters.isNotEmpty ? '&' + queryParameters : ''));
-
+    final uri = Uri.parse(hostName + '/api/users?page=$page' + (filters != null ? '&' + filters : ''));
 
     print(uri);
 
@@ -108,23 +101,46 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
       final data = json.decode(response.body);
       final eventData = Users.fromJson(data['users']);
 
+
+      print(data);
+
       setState(() {
         lastPage = eventData.lastPage!;
         yearGroupList.addAll(eventData.data!);
         isLoading = false;
       });
-      print(eventData.data);
     } else {
-      throw Exception('Failed to load yeargroup data');
+      throw Exception('Failed to load filtered data');
     }
   }
-
+// Function to apply filters
   void applyFilters({String? yeargroup, String? city, String? house, String? position}) {
-    // Clear the existing data
-    yearGroupList.clear();
 
-    // Call _fetchYearGroupData with filter parameters
-    _fetchYearGroupData(1, yeargroup: yeargroup, city: city, house: house, position: position);
+    yearGroupList.clear();
+    // Update the filter criteria and reset the page to 1
+    currentFilters = buildFilterQueryString(yeargroup, city, house, position);
+    currentFilteredPage = 1;
+
+    // Fetch the filtered data with the updated criteria
+    _fetchFilteredData(currentFilteredPage, currentFilters);
+  }
+
+
+  String? buildFilterQueryString(String? yeargroup, String? city, String? house, String? position) {
+    final filters = <String, String?>{
+      if (yeargroup != null && yeargroup.isNotEmpty) 'yeargroup': yeargroup,
+      if (city != null && city.isNotEmpty) 'city': city,
+      if (house != null && house.isNotEmpty) 'house': house,
+      if (position != null && position.isNotEmpty) 'position': position,
+    };
+
+    // Construct the query string
+    final queryParameters = filters.entries
+        .where((entry) => entry.value != null)
+        .map((entry) => '${entry.key}=${Uri.encodeComponent(entry.value!)}')
+        .join('&');
+
+    return queryParameters.isNotEmpty ? queryParameters : null;
   }
 
   @override
@@ -210,7 +226,7 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                       children: [
                         Column(
                           children: [
-                            Container(
+                            /*Container(
                               height: 50,
                               //color: Colors.red,
                               child: ListView.builder(
@@ -256,102 +272,114 @@ class _AllRegisteredUsersState extends State<AllRegisteredUsers> {
                                   }
                               ),
 
-                            ),
-                            if(yearGroupList.isNotEmpty)...[
+                            ),*/
+
+                            if(isLoading == true)...[
                               Expanded(
                                 child: Container(
-                                  child: ListView.builder(
-                                    controller: _scrollController,
-                                    itemCount: yearGroupList.length,
-                                    itemBuilder: (context, index) {
-                                      final userItem = yearGroupList[index];
-                                      return InkWell(
-                                        onTap: (){
-                                          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserDetailScreen(data: userItem)));
-
-                                        },
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                if(userItem.image != "")...[
-                                                  Container(
-                                                    height: 70,
-                                                    width: 70,
-                                                    margin: EdgeInsets.all(10),
-                                                    decoration: BoxDecoration(
-                                                        color: odaSecondary.withOpacity(0.2),
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        image: DecorationImage(
-                                                            image: NetworkImage(userItem.image.toString()),
-                                                            fit: BoxFit.cover
-                                                        )
-                                                    ),
-                                                  ),
-                                                ]else...[
-                                                  Container(
-                                                    height: 70,
-                                                    width: 70,
-                                                    margin: EdgeInsets.all(10),
-                                                    decoration: BoxDecoration(
-                                                        color: odaSecondary.withOpacity(0.2),
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        image: DecorationImage(
-                                                            image: NetworkImage(userItem.image.toString()),
-                                                            fit: BoxFit.cover
-                                                        )
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(userItem.firstName.toString().substring(0, 1) + userItem.lastName.toString().substring(0, 1), style: TextStyle( fontSize: 19, color: Colors.grey),),
-                                                    ),
-                                                  ),
-                                                ],
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Container(
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(userItem.firstName.toString() + " " +userItem.lastName.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),),
-                                                      SizedBox(
-                                                        height: 2,
-                                                      ),
-                                                      Text(userItem.email.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),
-                                                      SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      Text("View Details", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: odaSecondary),),
-                                                    ],
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            Container(
-                                              //width: 150,
-                                              margin: EdgeInsets.symmetric(horizontal: 10),
-                                              child: Divider(
-                                                color: Colors.black.withOpacity(0.2),
-                                                thickness: 1,
-
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
                                   ),
                                 ),
                               ),
                             ]else...[
-                              Expanded(
-                                child: Container(
-                                  child: Center(
-                                    child: Text("No users available"),
+                              if(yearGroupList.isNotEmpty)...[
+                                Expanded(
+                                  child: Container(
+                                    child: ListView.builder(
+                                      controller: _scrollController,
+                                      itemCount: yearGroupList.length,
+                                      itemBuilder: (context, index) {
+                                        final userItem = yearGroupList[index];
+                                        return InkWell(
+                                          onTap: (){
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserDetailScreen(data: userItem)));
+
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  if(userItem.image != "")...[
+                                                    Container(
+                                                      height: 70,
+                                                      width: 70,
+                                                      margin: EdgeInsets.all(10),
+                                                      decoration: BoxDecoration(
+                                                          color: odaSecondary.withOpacity(0.2),
+                                                          borderRadius: BorderRadius.circular(10),
+                                                          image: DecorationImage(
+                                                              image: NetworkImage(userItem.image.toString()),
+                                                              fit: BoxFit.cover
+                                                          )
+                                                      ),
+                                                    ),
+                                                  ]else...[
+                                                    Container(
+                                                      height: 70,
+                                                      width: 70,
+                                                      margin: EdgeInsets.all(10),
+                                                      decoration: BoxDecoration(
+                                                          color: odaSecondary.withOpacity(0.2),
+                                                          borderRadius: BorderRadius.circular(10),
+                                                          image: DecorationImage(
+                                                              image: NetworkImage(userItem.image.toString()),
+                                                              fit: BoxFit.cover
+                                                          )
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(userItem.firstName.toString().substring(0, 1) + userItem.lastName.toString().substring(0, 1), style: TextStyle( fontSize: 19, color: Colors.grey),),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Container(
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(userItem.firstName.toString() + " " +userItem.lastName.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),),
+                                                        SizedBox(
+                                                          height: 2,
+                                                        ),
+                                                        Text(userItem.email.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),
+                                                        SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        Text("View Details", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: odaSecondary),),
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                              Container(
+                                                //width: 150,
+                                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                                child: Divider(
+                                                  color: Colors.black.withOpacity(0.2),
+                                                  thickness: 1,
+
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ]else...[
+                                Expanded(
+                                  child: Container(
+                                    child: Center(
+                                      child: Text("No users available"),
+                                    ),
+                                  ),
+                                ),
+                              ]
                             ]
+
 
                           ],
                         ),

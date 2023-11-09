@@ -469,7 +469,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         width: 150,
                         child: Text("email:", style: TextStyle(fontSize: 18, color: Colors.grey.withOpacity(0.9)),)),
 
-                    Text(widget.data.email, style: TextStyle(fontSize: 18, ),),
+                    Expanded(child: Text(widget.data.email, style: TextStyle(fontSize: 18, ),)),
 
                   ],
                 ),
